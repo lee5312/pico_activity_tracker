@@ -1,6 +1,9 @@
 # Prerequisites
 *.d
 
+.vscode/c_cpp_properties.json
+.vscode/launch.json
+
 # Compiled Object files
 *.slo
 *.lo
