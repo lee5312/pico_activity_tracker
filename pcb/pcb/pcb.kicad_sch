@@ -4988,7 +4988,7 @@
 	)
 	(wire
 		(pts
-			(xy 162.56 107.95) (xy 162.56 113.03)
+			(xy 162.56 109.22) (xy 162.56 113.03)
 		)
 		(stroke
 			(width 0)
@@ -5508,7 +5508,7 @@
 	)
 	(wire
 		(pts
-			(xy 226.06 97.79) (xy 226.06 100.33)
+			(xy 226.06 97.79) (xy 226.06 101.6)
 		)
 		(stroke
 			(width 0)
@@ -5558,7 +5558,7 @@
 	)
 	(wire
 		(pts
-			(xy 226.06 107.95) (xy 226.06 113.03)
+			(xy 226.06 109.22) (xy 226.06 113.03)
 		)
 		(stroke
 			(width 0)
@@ -5648,7 +5648,7 @@
 	)
 	(wire
 		(pts
-			(xy 195.58 97.79) (xy 195.58 100.33)
+			(xy 195.58 97.79) (xy 195.58 101.6)
 		)
 		(stroke
 			(width 0)
@@ -5738,7 +5738,7 @@
 	)
 	(wire
 		(pts
-			(xy 255.27 97.79) (xy 255.27 100.33)
+			(xy 255.27 97.79) (xy 255.27 101.6)
 		)
 		(stroke
 			(width 0)
@@ -6008,7 +6008,7 @@
 	)
 	(wire
 		(pts
-			(xy 195.58 107.95) (xy 195.58 113.03)
+			(xy 195.58 109.22) (xy 195.58 113.03)
 		)
 		(stroke
 			(width 0)
@@ -6028,7 +6028,7 @@
 	)
 	(wire
 		(pts
-			(xy 162.56 97.79) (xy 162.56 100.33)
+			(xy 162.56 97.79) (xy 162.56 101.6)
 		)
 		(stroke
 			(width 0)
@@ -6228,7 +6228,7 @@
 	)
 	(wire
 		(pts
-			(xy 255.27 107.95) (xy 255.27 113.03)
+			(xy 255.27 109.22) (xy 255.27 113.03)
 		)
 		(stroke
 			(width 0)
@@ -6962,7 +6962,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Connector_PinSocket_2.54mm:PinSocket_1x04_P2.54mm_Vertical"
 			(at 20.32 133.35 0)
 			(effects
 				(font
@@ -7036,7 +7036,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Button_Switch_SMD:SW_DIP_SPSTx01_Slide_6.7x4.1mm_W6.73mm_P2.54mm_LowProfile_JPin"
 			(at 186.69 52.07 0)
 			(effects
 				(font
@@ -7368,7 +7368,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Connector_PinSocket_2.54mm:PinSocket_1x04_P2.54mm_Vertical"
 			(at 127 179.07 0)
 			(effects
 				(font
@@ -7560,7 +7560,7 @@
 	)
 	(symbol
 		(lib_id "Device:C")
-		(at 255.27 104.14 0)
+		(at 255.27 105.41 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -7569,7 +7569,7 @@
 		(fields_autoplaced yes)
 		(uuid "281e0b7b-ca82-45e9-a0c7-065b49de9f6e")
 		(property "Reference" "C4"
-			(at 259.08 102.8699 0)
+			(at 259.08 104.1399 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -7578,7 +7578,7 @@
 			)
 		)
 		(property "Value" "0.1uF"
-			(at 259.08 105.4099 0)
+			(at 259.08 106.6799 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -7586,8 +7586,8 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" ""
-			(at 256.2352 107.95 0)
+		(property "Footprint" "Capacitor_SMD:C_0805_2012Metric_Pad1.18x1.45mm_HandSolder"
+			(at 256.2352 109.22 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -7596,7 +7596,7 @@
 			)
 		)
 		(property "Datasheet" "~"
-			(at 255.27 104.14 0)
+			(at 255.27 105.41 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -7605,7 +7605,7 @@
 			)
 		)
 		(property "Description" "Unpolarized capacitor"
-			(at 255.27 104.14 0)
+			(at 255.27 105.41 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -7697,7 +7697,7 @@
 	)
 	(symbol
 		(lib_id "Device:C")
-		(at 195.58 104.14 0)
+		(at 195.58 105.41 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -7706,7 +7706,7 @@
 		(fields_autoplaced yes)
 		(uuid "3aec4cea-a8b0-4597-a705-993800a97a70")
 		(property "Reference" "C2"
-			(at 199.39 102.8699 0)
+			(at 199.39 104.1399 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -7715,7 +7715,7 @@
 			)
 		)
 		(property "Value" "0.1uF"
-			(at 199.39 105.4099 0)
+			(at 199.39 106.6799 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -7723,8 +7723,8 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" ""
-			(at 196.5452 107.95 0)
+		(property "Footprint" "Capacitor_SMD:C_0805_2012Metric_Pad1.18x1.45mm_HandSolder"
+			(at 196.5452 109.22 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -7733,7 +7733,7 @@
 			)
 		)
 		(property "Datasheet" "~"
-			(at 195.58 104.14 0)
+			(at 195.58 105.41 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -7742,7 +7742,7 @@
 			)
 		)
 		(property "Description" "Unpolarized capacitor"
-			(at 195.58 104.14 0)
+			(at 195.58 105.41 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -7793,7 +7793,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Capacitor_SMD:C_0805_2012Metric_Pad1.18x1.45mm_HandSolder"
 			(at 257.81 52.07 0)
 			(effects
 				(font
@@ -7863,7 +7863,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Resistor_SMD:R_0805_2012Metric_Pad1.20x1.40mm_HandSolder"
 			(at 229.87 57.15 0)
 			(effects
 				(font
@@ -8039,7 +8039,7 @@
 	)
 	(symbol
 		(lib_id "Device:C")
-		(at 226.06 104.14 0)
+		(at 226.06 105.41 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -8048,7 +8048,7 @@
 		(fields_autoplaced yes)
 		(uuid "5fd9db02-9632-4676-88b2-7e91b6709381")
 		(property "Reference" "C3"
-			(at 229.87 102.8699 0)
+			(at 229.87 104.1399 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -8057,7 +8057,7 @@
 			)
 		)
 		(property "Value" "0.1uF"
-			(at 229.87 105.4099 0)
+			(at 229.87 106.6799 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -8065,8 +8065,8 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" ""
-			(at 227.0252 107.95 0)
+		(property "Footprint" "Capacitor_SMD:C_0805_2012Metric_Pad1.18x1.45mm_HandSolder"
+			(at 227.0252 109.22 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -8075,7 +8075,7 @@
 			)
 		)
 		(property "Datasheet" "~"
-			(at 226.06 104.14 0)
+			(at 226.06 105.41 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -8084,7 +8084,7 @@
 			)
 		)
 		(property "Description" "Unpolarized capacitor"
-			(at 226.06 104.14 0)
+			(at 226.06 105.41 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -8399,7 +8399,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Capacitor_SMD:C_0805_2012Metric_Pad1.18x1.45mm_HandSolder"
 			(at 194.31 38.1 0)
 			(effects
 				(font
@@ -8622,7 +8622,7 @@
 				(hide yes)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Connector_PinSocket_2.54mm:PinSocket_1x28_P2.54mm_Vertical"
 			(at 127 120.65 0)
 			(effects
 				(font
@@ -8770,7 +8770,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Capacitor_SMD:C_0805_2012Metric_Pad1.18x1.45mm_HandSolder"
 			(at 265.43 52.07 0)
 			(effects
 				(font
@@ -8840,7 +8840,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Resistor_SMD:R_0805_2012Metric_Pad1.20x1.40mm_HandSolder"
 			(at 229.87 52.07 0)
 			(effects
 				(font
@@ -8908,7 +8908,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Connector_PinSocket_2.54mm:PinSocket_1x03_P2.54mm_Vertical"
 			(at 62.23 179.07 0)
 			(effects
 				(font
@@ -9113,7 +9113,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Resistor_SMD:R_0805_2012Metric_Pad1.20x1.40mm_HandSolder"
 			(at 237.49 52.07 0)
 			(effects
 				(font
@@ -9181,7 +9181,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Connector_PinSocket_2.54mm:PinSocket_1x06_P2.54mm_Vertical"
 			(at 20.32 156.21 0)
 			(effects
 				(font
@@ -9341,7 +9341,7 @@
 				(hide yes)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Connector_PinSocket_2.54mm:PinSocket_1x28_P2.54mm_Vertical"
 			(at 62.23 120.65 0)
 			(effects
 				(font
@@ -9605,7 +9605,7 @@
 	)
 	(symbol
 		(lib_id "Device:C")
-		(at 162.56 104.14 0)
+		(at 162.56 105.41 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -9614,7 +9614,7 @@
 		(fields_autoplaced yes)
 		(uuid "b0f684ca-afcc-4171-96fc-ca8afa43f822")
 		(property "Reference" "C1"
-			(at 166.37 102.8699 0)
+			(at 166.37 104.1399 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -9623,7 +9623,7 @@
 			)
 		)
 		(property "Value" "500u"
-			(at 166.37 105.4099 0)
+			(at 166.37 106.6799 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -9631,8 +9631,8 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" ""
-			(at 163.5252 107.95 0)
+		(property "Footprint" "Capacitor_SMD:C_0805_2012Metric_Pad1.18x1.45mm_HandSolder"
+			(at 163.5252 109.22 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -9641,7 +9641,7 @@
 			)
 		)
 		(property "Datasheet" "~"
-			(at 162.56 104.14 0)
+			(at 162.56 105.41 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -9650,7 +9650,7 @@
 			)
 		)
 		(property "Description" "Unpolarized capacitor"
-			(at 162.56 104.14 0)
+			(at 162.56 105.41 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -9767,7 +9767,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Resistor_SMD:R_0805_2012Metric_Pad1.20x1.40mm_HandSolder"
 			(at 194.31 58.42 0)
 			(effects
 				(font
@@ -10036,7 +10036,7 @@
 				(justify right)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Resistor_SMD:R_0805_2012Metric_Pad1.20x1.40mm_HandSolder"
 			(at 171.704 120.396 90)
 			(effects
 				(font
@@ -10170,7 +10170,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Connector_PinSocket_2.54mm:PinSocket_1x09_P2.54mm_Vertical"
 			(at 20.32 182.88 0)
 			(effects
 				(font
@@ -10456,7 +10456,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Inductor_SMD:L_0805_2012Metric_Pad1.05x1.20mm_HandSolder"
 			(at 210.82 35.56 0)
 			(effects
 				(font
@@ -10733,7 +10733,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "NetTie:NetTie-2_SMD_Pad0.5mm"
 			(at 116.84 73.66 0)
 			(effects
 				(font
@@ -11067,7 +11067,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Capacitor_SMD:C_0805_2012Metric_Pad1.18x1.45mm_HandSolder"
 			(at 250.19 52.07 0)
 			(effects
 				(font
