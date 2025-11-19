@@ -9748,7 +9748,7 @@
 		(net 15)
 		(net_name "+3V3")
 		(layer "F.Cu")
-		(uuid "6cf37a9d-b979-4716-9414-679c4161a5b1")
+		(uuid "5c914cca-d0a2-4527-b5ae-83d2d423dc0f")
 		(hatch edge 0.5)
 		(connect_pads
 			(clearance 0.5)
