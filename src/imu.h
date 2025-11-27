@@ -35,7 +35,7 @@ uint16_t imu_get_steps_last_hour(void);
 //Returns true if the goal is reached, false otherwise.
 bool imu_step_goal_reached(void);
 
-//Get a simple activity level.
+//Get a simple activity level..
 uint8_t imu_get_activity_level(void);
 
 #endif 
