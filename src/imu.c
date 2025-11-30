@@ -5,6 +5,10 @@
 #include <math.h>
 #include <string.h>
 
+#ifndef M_PI
+#define M_PI 3.14159265358979323846f
+#endif
+
 // ==============================
 //  Hardware / wiring config
 // ==============================
@@ -74,7 +78,8 @@
 
 // Simple low-pass filter tracking the 1g baseline (used to get a high-pass signal)
 #define IMU_MAG_LP_ALPHA             0.01f        // 0 < alpha <= 1
-
+#define IMU_STEP_WINDOW_SAMPLES      10
+#define IMU_STEP_SIM_THRESHOLD       0.75f   // normalized correlation threshold
 // ==============================
 //  Internal state
 // ==============================
@@ -106,6 +111,20 @@ static uint8_t  s_curr_min_idx         = 0;
 static uint32_t s_curr_bucket_start_ms = 0;
 static uint32_t s_steps_last_hour_sum  = 0;
 
+// Ring buffer for high-pass magnitude (step pattern window)
+typedef struct {
+    float   samples[IMU_STEP_WINDOW_SAMPLES];
+    uint8_t idx;    // next write index
+    bool    full;   // has wrapped around at least once
+} imu_step_window_t;
+
+static imu_step_window_t s_step_window;
+
+// Reference pattern for "one step" in high-pass magnitude.
+// 지금은 간단한 half-sine 파형으로 초기화해두고,
+// 나중에 실제 데이터 기반으로 바꾸고 싶으면 이 배열만 교체하면 됨.
+static float s_step_ref[IMU_STEP_WINDOW_SAMPLES];
+static bool  s_step_ref_initialized = false;
 // ==============================
 //  SPI helpers
 // ==============================
@@ -219,6 +238,94 @@ static void imu_history_advance_buckets(uint32_t now_ms)
 }
 
 // ==============================
+//  Step ring buffer helpers
+// ==============================
+
+static void imu_step_window_reset(void)
+{
+    memset(&s_step_window, 0, sizeof(s_step_window));
+}
+
+static void imu_init_step_reference(void)
+{
+    if (s_step_ref_initialized) {
+        return;
+    }
+
+    for (int i = 0; i < IMU_STEP_WINDOW_SAMPLES; ++i) {
+        float t = 0.0f;
+        if (IMU_STEP_WINDOW_SAMPLES > 1) {
+            t = (float)i / (float)(IMU_STEP_WINDOW_SAMPLES - 1);
+        }
+        // 0 → peak → 0 으로 가는 half sine 파형
+        s_step_ref[i] = sinf(M_PI * t);
+    }
+
+    s_step_ref_initialized = true;
+}
+
+static void imu_step_window_push(float value)
+{
+    s_step_window.samples[s_step_window.idx] = value;
+    s_step_window.idx =
+        (uint8_t)((s_step_window.idx + 1u) % IMU_STEP_WINDOW_SAMPLES);
+
+    if (s_step_window.idx == 0u) {
+        s_step_window.full = true;
+    }
+}
+
+// Normalized cross-correlation between current window and reference pattern.
+// Returns value in [0, 1].
+static float imu_step_window_similarity(void)
+{
+    if (!s_step_window.full) {
+        // 아직 윈도우가 꽉 차지 않았으면 의미 있는 비교가 안 됨
+        return 0.0f;
+    }
+
+    const int N = IMU_STEP_WINDOW_SAMPLES;
+
+    float mean_x = 0.0f;
+    float mean_r = 0.0f;
+
+    // oldest sample is at samples[idx]
+    for (int i = 0; i < N; ++i) {
+        float x = s_step_window.samples[(s_step_window.idx + i) % N];
+        float r = s_step_ref[i];
+        mean_x += x;
+        mean_r += r;
+    }
+    mean_x /= (float)N;
+    mean_r /= (float)N;
+
+    float num     = 0.0f;
+    float denom_x = 0.0f;
+    float denom_r = 0.0f;
+
+    for (int i = 0; i < N; ++i) {
+        float x = s_step_window.samples[(s_step_window.idx + i) % N] - mean_x;
+        float r = s_step_ref[i] - mean_r;
+        num     += x * r;
+        denom_x += x * x;
+        denom_r += r * r;
+    }
+
+    if (denom_x <= 1e-6f || denom_r <= 1e-6f) {
+        return 0.0f;
+    }
+
+    float sim = num / (sqrtf(denom_x) * sqrtf(denom_r));
+
+    // 파형이 살짝 뒤집혀도 인식되게 하려면 절댓값 사용
+    if (sim < 0.0f) {
+        sim = -sim;
+    }
+
+    return sim;
+}
+
+// ==============================
 //  Public API
 // ==============================
 
@@ -278,6 +385,9 @@ bool imu_init(void)
     s_last_step_ms = 0;
     imu_history_reset(0); // will be re-aligned on the first update() call
 
+    imu_init_step_reference();
+    imu_step_window_reset();
+
     s_initialized = true;
     return true;
 }
@@ -320,10 +430,17 @@ void imu_update(uint32_t now_ms)
 
     s_mag_hp = mag - s_mag_lp;
 
-    // 5) Very simple step detector:
-    //    - look for high-pass magnitude above threshold
-    //    - enforce a minimum time interval between step events
-    if (s_mag_hp > IMU_STEP_THRESHOLD_G) {
+    // 5) Ring-buffer-based step detector:
+    //    - high-pass magnitude를 윈도우에 밀어넣고
+    //    - 윈도우 전체 파형과 reference 파형의 유사도를 본 뒤
+    //    - 최소 시간 간격 조건을 적용해서 step 이벤트로 인정
+    imu_step_window_push(s_mag_hp);
+
+    float similarity = imu_step_window_similarity();
+
+    if (similarity > IMU_STEP_SIM_THRESHOLD &&
+        s_mag_hp > IMU_STEP_THRESHOLD_G) {
+
         uint32_t dt = now_ms - s_last_step_ms;
         if (dt > IMU_STEP_MIN_INTERVAL_MS) {
             s_last_step_ms = now_ms;
