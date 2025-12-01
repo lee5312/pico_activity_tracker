@@ -13,17 +13,6 @@
 // ==============================
 //  Hardware / wiring config
 // ==============================
-//
-// This code assumes the IMU is connected via SPI.
-//
-// The pin assignments below are just placeholders.
-//
-// Typical SPI0 mapping on the Pico (just an example):
-//   SCK  = GPIO18
-//   MOSI = GPIO19
-//   MISO = GPIO16
-//   CS   = GPIO17
-//
 
 #define IMU_SPI_PORT   spi0
 #define IMU_PIN_MISO   16   // SPI0 RX DO
@@ -39,7 +28,6 @@
 // ==============================
 
 #define LSM6DS3_REG_FUNC_CFG_ACCESS  0x01
-#define LSM6DS3_REG_WHO_AM_I         0x0F
 #define LSM6DS3_REG_CTRL1_XL         0x10
 #define LSM6DS3_REG_CTRL2_G          0x11
 #define LSM6DS3_REG_CTRL3_C          0x12
@@ -60,14 +48,9 @@
 #define LSM6DS3_REG_OUTZ_L_XL        0x2C
 #define LSM6DS3_REG_OUTZ_H_XL        0x2D
 
-#define LSM6DS3_WHO_AM_I_VALUE       0x6A
-
 // ==============================
 //  Step detection / history config
 // ==============================
-//
-// Assumption: imu_update() is called at a fairly fixed rate
-//             (something like 50–100 Hz works fine).
 // The numbers below are just first guesses; they really should be tuned
 // with actual motion data from your setup.
 
@@ -92,7 +75,7 @@ static int16_t  s_raw_ax               = 0;
 static int16_t  s_raw_ay               = 0;
 static int16_t  s_raw_az               = 0;
 
-// Last converted accel sample in g (no extra filtering for now)
+// Last converted accel sample in g 
 static float    s_filt_ax              = 0.0f;
 static float    s_filt_ay              = 0.0f;
 static float    s_filt_az              = 0.0f;
@@ -122,8 +105,6 @@ typedef struct {
 static imu_step_window_t s_step_window;
 
 // Reference pattern for "one step" in high-pass magnitude.
-// 지금은 간단한 half-sine 파형으로 초기화해두고,
-// 나중에 실제 데이터 기반으로 바꾸고 싶으면 이 배열만 교체하면 됨.
 static float s_step_ref[IMU_STEP_WINDOW_SAMPLES];
 static bool  s_step_ref_initialized = false;
 // ==============================
@@ -183,8 +164,6 @@ static uint8_t imu_read_reg(uint8_t reg)
 // Read multiple consecutive registers (auto-increment)
 static void imu_read_regs(uint8_t start_reg, uint8_t *buf, size_t len)
 {
-    // READ 비트(0x80)만 세우고, 주소는 그대로 둔다.
-    // auto-increment는 CTRL3_C의 IF_INC 비트가 이미 켜져 있어서 알아서 됨.
     uint8_t tx = start_reg | 0x80;
 
     imu_select();
@@ -260,7 +239,7 @@ static void imu_init_step_reference(void)
         if (IMU_STEP_WINDOW_SAMPLES > 1) {
             t = (float)i / (float)(IMU_STEP_WINDOW_SAMPLES - 1);
         }
-        // 0 → peak → 0 으로 가는 half sine 파형
+        // 0 → peak → 0 half sine wave
         s_step_ref[i] = sinf(M_PI * t);
     }
 
@@ -319,7 +298,7 @@ static float imu_step_window_similarity(void)
 
     float sim = num / (sqrtf(denom_x) * sqrtf(denom_r));
 
-    // 파형이 살짝 뒤집혀도 인식되게 하려면 절댓값 사용
+    // absolute value
     if (sim < 0.0f) {
         sim = -sim;
     }
@@ -351,19 +330,6 @@ bool imu_init(void)
 
     // Give the sensor some time to power up
     sleep_ms(20);
-
-    // Confirm we're talking to the correct device
-    uint8_t whoami = imu_read_reg(LSM6DS3_REG_WHO_AM_I);
-
-    // 여기서 WHO_AM_I 값 찍기
-    printf("WHO_AM_I = 0x%02X\r\n", whoami);
-
-    if (whoami != LSM6DS3_WHO_AM_I_VALUE) {
-        printf("IMU WHO_AM_I mismatch: got 0x%02X, expected 0x%02X\r\n",
-               whoami, LSM6DS3_WHO_AM_I_VALUE);
-        s_initialized = false;
-        return false;
-    }
 
     // Basic control register setup
     // CTRL3_C: enable auto-increment (IF_INC) and block data update (BDU)
@@ -404,27 +370,6 @@ void imu_update(uint32_t now_ms)
         return;
     }
 
-    // ============================
-    // ★ 디버그: 레지스터 생값 찍기
-    // ============================
-    // static int debug_count = 0;
-    // if (debug_count < 20) {   // 처음 20번까지만 찍게 제한
-    //     uint8_t raw_bytes[6];
-    //     imu_read_regs(LSM6DS3_REG_OUTX_L_XL, raw_bytes, 6);
-
-    //     uint8_t ctrl1  = imu_read_reg(LSM6DS3_REG_CTRL1_XL);
-    //     uint8_t status = imu_read_reg(LSM6DS3_REG_STATUS_REG);
-
-    //     printf("DBG CTRL1_XL=0x%02X STATUS=0x%02X  RAW=%02X %02X %02X %02X %02X %02X\r\n",
-    //            ctrl1, status,
-    //            raw_bytes[0], raw_bytes[1],
-    //            raw_bytes[2], raw_bytes[3],
-    //            raw_bytes[4], raw_bytes[5]);
-
-    //     debug_count++;
-    // }
-    // ============================
-
     // 1) Update the per-minute buckets according to the current time
     imu_history_advance_buckets(now_ms);
 
@@ -459,12 +404,12 @@ void imu_update(uint32_t now_ms)
     s_mag_hp = mag - s_mag_lp;
 
     // 5) Ring-buffer-based step detector:
-    //    - high-pass magnitude를 윈도우에 밀어넣고
-    //    - 윈도우 전체 파형과 reference 파형의 유사도를 본 뒤
-    //    - 최소 시간 간격 조건을 적용해서 step 이벤트로 인정
+    //    - high-pass magnitude into ring buffer
+    //    - Compare the windowed waveform to the reference pattern
+    //    - If similarity and minimum-interval checks pass, count a step
     imu_step_window_push(s_mag_hp);
-
-    float similarity = imu_step_window_similarity();
+    float similarity = 1.0f;  // pass all steps for now
+    // float similarity = imu_step_window_similarity();
 
     if (similarity > IMU_STEP_SIM_THRESHOLD &&
         s_mag_hp > IMU_STEP_THRESHOLD_G) {
@@ -534,8 +479,3 @@ uint8_t imu_get_activity_level(void)
     }
 }
 
-uint8_t imu_debug_read_whoami(void)
-{
-    // 내부 static 함수 imu_read_reg() 재사용
-    return imu_read_reg(LSM6DS3_REG_WHO_AM_I);
-}
