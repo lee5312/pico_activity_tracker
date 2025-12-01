@@ -4,6 +4,7 @@
 #include "hardware/spi.h"
 #include <math.h>
 #include <string.h>
+#include <stdio.h> 
 
 #ifndef M_PI
 #define M_PI 3.14159265358979323846f
@@ -25,10 +26,10 @@
 //
 
 #define IMU_SPI_PORT   spi0
-#define IMU_PIN_MISO   16   // SPI0 RX
-#define IMU_PIN_CS     17   // SPI0 CSn
-#define IMU_PIN_SCK    18   // SPI0 SCK
-#define IMU_PIN_MOSI   19   // SPI0 TX
+#define IMU_PIN_MISO   16   // SPI0 RX DO
+#define IMU_PIN_CS     17   // SPI0 CSn CS
+#define IMU_PIN_SCK    18   // SPI0 SCK SCL
+#define IMU_PIN_MOSI   19   // SPI0 TX SDA
 
 // LSM6DS3TR-C SPI mode:
 #define IMU_SPI_BAUD   (1 * 1000 * 1000) // 1 MHz
@@ -182,7 +183,9 @@ static uint8_t imu_read_reg(uint8_t reg)
 // Read multiple consecutive registers (auto-increment)
 static void imu_read_regs(uint8_t start_reg, uint8_t *buf, size_t len)
 {
-    uint8_t tx = start_reg | 0xC0; // MSB=1 (read), bit6=1 (auto-increment)
+    // READ 비트(0x80)만 세우고, 주소는 그대로 둔다.
+    // auto-increment는 CTRL3_C의 IF_INC 비트가 이미 켜져 있어서 알아서 됨.
+    uint8_t tx = start_reg | 0x80;
 
     imu_select();
     spi_write_blocking(IMU_SPI_PORT, &tx, 1);
@@ -280,7 +283,6 @@ static void imu_step_window_push(float value)
 static float imu_step_window_similarity(void)
 {
     if (!s_step_window.full) {
-        // 아직 윈도우가 꽉 차지 않았으면 의미 있는 비교가 안 됨
         return 0.0f;
     }
 
@@ -352,9 +354,13 @@ bool imu_init(void)
 
     // Confirm we're talking to the correct device
     uint8_t whoami = imu_read_reg(LSM6DS3_REG_WHO_AM_I);
+
+    // 여기서 WHO_AM_I 값 찍기
+    printf("WHO_AM_I = 0x%02X\r\n", whoami);
+
     if (whoami != LSM6DS3_WHO_AM_I_VALUE) {
-        // Optional: printf for debugging if stdio is enabled
-        // printf("IMU WHO_AM_I mismatch: 0x%02X (expected 0x%02X)\n", whoami, LSM6DS3_WHO_AM_I_VALUE);
+        printf("IMU WHO_AM_I mismatch: got 0x%02X, expected 0x%02X\r\n",
+               whoami, LSM6DS3_WHO_AM_I_VALUE);
         s_initialized = false;
         return false;
     }
@@ -398,6 +404,27 @@ void imu_update(uint32_t now_ms)
         return;
     }
 
+    // ============================
+    // ★ 디버그: 레지스터 생값 찍기
+    // ============================
+    // static int debug_count = 0;
+    // if (debug_count < 20) {   // 처음 20번까지만 찍게 제한
+    //     uint8_t raw_bytes[6];
+    //     imu_read_regs(LSM6DS3_REG_OUTX_L_XL, raw_bytes, 6);
+
+    //     uint8_t ctrl1  = imu_read_reg(LSM6DS3_REG_CTRL1_XL);
+    //     uint8_t status = imu_read_reg(LSM6DS3_REG_STATUS_REG);
+
+    //     printf("DBG CTRL1_XL=0x%02X STATUS=0x%02X  RAW=%02X %02X %02X %02X %02X %02X\r\n",
+    //            ctrl1, status,
+    //            raw_bytes[0], raw_bytes[1],
+    //            raw_bytes[2], raw_bytes[3],
+    //            raw_bytes[4], raw_bytes[5]);
+
+    //     debug_count++;
+    // }
+    // ============================
+
     // 1) Update the per-minute buckets according to the current time
     imu_history_advance_buckets(now_ms);
 
@@ -407,6 +434,7 @@ void imu_update(uint32_t now_ms)
     s_raw_ax = ax;
     s_raw_ay = ay;
     s_raw_az = az;
+
 
     // 3) Convert to g units (assuming ±2g full-scale)
     float ax_g = (float)ax * IMU_ACCEL_LSB_2G;
@@ -504,4 +532,10 @@ uint8_t imu_get_activity_level(void)
     } else {
         return 3;
     }
+}
+
+uint8_t imu_debug_read_whoami(void)
+{
+    // 내부 static 함수 imu_read_reg() 재사용
+    return imu_read_reg(LSM6DS3_REG_WHO_AM_I);
 }

@@ -3,17 +3,26 @@
 #include <stdlib.h>
 #include <string.h>
 #include "pico/stdlib.h"
+#include "imu.h"
 
+#include <stdio.h>
 #include "pico/stdlib.h"
 #include "imu.h"
-#include <stdio.h>
+
 
 int main(void) {
     stdio_init_all();
-    sleep_ms(1000); 
+    sleep_ms(1000);
 
     bool ok = imu_init();
-    printf("imu_init() = %d\n", ok);
+    printf("imu_init() = %d\r\n", ok);
+
+    if (!ok) {
+        printf("IMU init failed, aborting.\r\n");
+        while (1) {
+            sleep_ms(1000);
+        }
+    }
 
     while (1) {
         uint32_t now = to_ms_since_boot(get_absolute_time());
@@ -24,6 +33,6 @@ int main(void) {
         printf("raw: %6d %6d %6d  steps=%lu\r\n",
                ax, ay, az, (unsigned long)imu_get_total_steps());
 
-        sleep_ms(100); // 10Hz 
+        sleep_ms(100); // 10 Hz
     }
 }
